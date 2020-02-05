@@ -7,6 +7,6 @@
     display: none !important;
 } */
 
-.actions > button {
+.actions button[name="update_cart"] {
     display: none !important;
 }

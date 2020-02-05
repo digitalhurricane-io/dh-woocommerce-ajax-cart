@@ -41,7 +41,9 @@
 					// this try/catch is specific to a theme I'm making right now, with a modified cart template.
 					// default cart template doesn't have a total field
 					try {
-						$('#cart_total_td > strong > span').text(res.data); // change cart total
+						$('#cart_total_td > strong > span').text(numberWithCommas(res.data)); // change cart total
+						$('#cart_total_td > strong > span').prepend('<span class="woocommerce-Price-currencySymbol">$</span>');
+						
 					} catch(e) {
 						console.error(e);
 					}
@@ -68,9 +70,11 @@
 			const price = tr.find('.product-price .woocommerce-Price-amount').text().slice(1); // slice to take off $
 			console.log('price: ', price);
 
-			const newSubtotal = (quantity * parseFloat(price)).toFixed(2);
-
-			tr.find('.product-subtotal .woocommerce-Price-amount').text( '$' + newSubtotal);
+			const newSubtotal = numberWithCommas((quantity * parseFloat(price)).toFixed(2));
+			// <span class="woocommerce-Price-currencySymbol">$</span>
+			tr.find('.product-subtotal .woocommerce-Price-amount').text(newSubtotal);
+			tr.find('.product-subtotal .woocommerce-Price-amount').prepend('<span class="woocommerce-Price-currencySymbol">$</span>');
+			// tr.find('.product-subtotal .woocommerce-Price-amount').text(newSubtotal);
 		});
 			
 	}
@@ -122,6 +126,10 @@
 		return new Promise((resolve, reject) => {
 			$.ajax(options).done(resolve).fail(reject);
 		});
+	}
+
+	function numberWithCommas(x) {
+		return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 	}
 
 })( jQuery );
