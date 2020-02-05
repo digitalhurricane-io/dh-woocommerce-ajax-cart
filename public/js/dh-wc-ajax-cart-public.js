@@ -20,10 +20,12 @@
 		$("div.woocommerce").on("change keyup mouseup", "input.qty, select.qty", function () { // keyup and mouseup for Firefox support
 			if (timeout != undefined) clearTimeout(timeout); //cancel previously scheduled event
 			if ($(this).val() == "") return; //qty empty, instead of removing item from cart, do nothing
-			timeout = setTimeout(function () {
+			timeout = setTimeout(async function () {
 				console.log($('form').serializeArray());
+
+				let res;
 				try {
-					ajaxPromise({
+					res = await ajaxPromise({
 						type: 'POST',
 						url: '/wp-admin/admin-ajax.php?action=dhaj_wc_adjust_cart',
 						data: $('form').serialize()
@@ -31,12 +33,47 @@
 				} catch(e) {
 					console.log(e);
 				} 
+				console.log('res: ', res);
+
+				// res.data contains the new total
+				if (res && res.success) {
+					
+					// this try/catch is specific to a theme I'm making right now, with a modified cart template.
+					// default cart template doesn't have a total field
+					try {
+						$('#cart_total_td > strong > span').text(res.data); // change cart total
+					} catch(e) {
+						console.error(e);
+					}
+					
+					updateSubtotals();
+					
+				}
 
 			}, 400);
 		});
 	});
 
+	// loop through rows and recalculate subtotals
+	function updateSubtotals() {
+		let tableRows = $('table.cart > tbody > tr.cart_item');
+		console.log('tableRows: ', tableRows);
 
+		tableRows.each(function() {
+			const tr = $(this);
+
+			const quantity = tr.find('.qty').val();
+			console.log('quantity: ', quantity);
+
+			const price = tr.find('.product-price .woocommerce-Price-amount').text().slice(1); // slice to take off $
+			console.log('price: ', price);
+
+			const newSubtotal = (quantity * parseFloat(price)).toFixed(2);
+
+			tr.find('.product-subtotal .woocommerce-Price-amount').text( '$' + newSubtotal);
+		});
+			
+	}
 
 	async function removeItem(xLink) {
 		const linkUrl = new URL(xLink[0].href);

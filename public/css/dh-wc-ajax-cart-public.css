@@ -3,6 +3,10 @@
  * included in this file.
  */
 
-.woocommerce .cart .button {
+/* .woocommerce .cart .button {
+    display: none !important;
+} */
+
+.actions > button {
     display: none !important;
 }

@@ -102,6 +102,8 @@ class Dh_Wc_Ajax_Cart_Public {
 
 	public function register_conditional_enqueue()
 	{
+		// have to use template_redirect hook in order for is_cart and is_checkout 
+		// template tags to become available
 		add_action('template_redirect', [$this, 'do_conditional_enqueue']);
 	}
 
@@ -144,7 +146,9 @@ class Dh_Wc_Ajax_Cart_Public {
 		foreach($info as $cart_item_key => $quantity_arr) {
 			$woocommerce->cart->set_quantity($cart_item_key, $quantity_arr['qty']);
 		}
-		wp_send_json_success();
+
+		$newTotal = $woocommerce->cart->get_totals()['total'];
+		wp_send_json_success($newTotal);
 
 	}
 }
