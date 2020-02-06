@@ -125,7 +125,10 @@ class Dh_Wc_Ajax_Cart_Public {
 		global $woocommerce;
 		$successful = $woocommerce->cart->remove_cart_item($_POST['cartKey']);
 		if ($successful) {
-			wp_send_json_success();
+			
+			$newTotal = $woocommerce->cart->get_totals()['total'];
+			wp_send_json_success($newTotal);
+
 		} else {
 			wp_send_json_error();
 		}
@@ -144,7 +147,14 @@ class Dh_Wc_Ajax_Cart_Public {
 
 		$info = $_POST['cart'];
 		foreach($info as $cart_item_key => $quantity_arr) {
-			$woocommerce->cart->set_quantity($cart_item_key, $quantity_arr['qty']);
+			try {
+				$woocommerce->cart->set_quantity($cart_item_key, $quantity_arr['qty']);
+			} catch (Throwable $e) {}
+
+		}
+
+		if ($woocommerce->cart->get_cart_contents_count() == 0) {
+			wp_send_json_success('0.00');
 		}
 
 		$newTotal = $woocommerce->cart->get_totals()['total'];

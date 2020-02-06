@@ -116,6 +116,18 @@
 
 		if (res && res.success) {
 			console.log('success');
+
+			// this try/catch is specific to a theme I'm making right now, with a modified cart template.
+			// default cart template doesn't have a total field
+			const updatedTotal = numberWithCommas(parseFloat(res.data).toFixed(2));
+			try {
+				$('#cart_total_td > strong > span').text(updatedTotal); // change cart total
+				$('#cart_total_td > strong > span').prepend('<span class="woocommerce-Price-currencySymbol">$</span>');
+
+			} catch (e) {
+				console.error(e);
+			}
+
 			return true;
 		}
 		console.log('no success');
