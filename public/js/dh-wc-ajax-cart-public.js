@@ -20,6 +20,7 @@
 		$("div.woocommerce").on("change keyup mouseup", "input.qty, select.qty", function () { // keyup and mouseup for Firefox support
 			if (timeout != undefined) clearTimeout(timeout); //cancel previously scheduled event
 			if ($(this).val() == "") return; //qty empty, instead of removing item from cart, do nothing
+
 			timeout = setTimeout(async function () {
 				console.log($('form').serializeArray());
 
@@ -71,10 +72,15 @@
 			console.log('price: ', price);
 
 			const newSubtotal = numberWithCommas((quantity * parseFloat(price)).toFixed(2));
-			// <span class="woocommerce-Price-currencySymbol">$</span>
+			
+			if (parseFloat(newSubtotal) == 0) {
+				tr.remove();
+				return;
+			}
+
 			tr.find('.product-subtotal .woocommerce-Price-amount').text(newSubtotal);
 			tr.find('.product-subtotal .woocommerce-Price-amount').prepend('<span class="woocommerce-Price-currencySymbol">$</span>');
-			// tr.find('.product-subtotal .woocommerce-Price-amount').text(newSubtotal);
+			
 		});
 			
 	}

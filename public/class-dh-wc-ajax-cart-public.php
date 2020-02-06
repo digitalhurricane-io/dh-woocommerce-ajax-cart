@@ -143,6 +143,13 @@ class Dh_Wc_Ajax_Cart_Public {
 			die();
 		}
 
+		// this can happen due to race condition in jquery
+		// it was easier just to guard against it here than
+		// fix the race condition
+		if (!isset($_POST['cart'])) {
+			wp_send_json_error('0.00');
+		}
+
 		global $woocommerce;
 
 		$info = $_POST['cart'];
