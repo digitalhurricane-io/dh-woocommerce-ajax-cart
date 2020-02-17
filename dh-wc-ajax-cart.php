@@ -80,3 +80,12 @@ function run_dh_wc_ajax_cart() {
 
 add_action('woocommerce_loaded', 'run_dh_wc_ajax_cart');
 
+
+// UPDATE CHECK
+// check gitlab tags vs version at top of this file
+require_once 'plugin-update-checker/plugin-update-checker.php';
+$doLoginUpdateChecker = Puc_v4_Factory::buildUpdateChecker(
+	'https://github.com/digitalhurricane-io/dh-woocommerce-ajax-cart',
+	__FILE__,
+	'dh-woocommerce-ajax-cart'
+);
