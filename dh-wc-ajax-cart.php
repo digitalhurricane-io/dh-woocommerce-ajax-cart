@@ -16,7 +16,7 @@
  * Plugin Name:       DH Woocommerce Ajax Cart
  * Plugin URI:        https://github.com/digitalhurricane-io/dh-woocommerce-ajax-cart
  * Description:       Adds ajax functionality for woocommerce cart
- * Version:           1.0.1
+ * Version:           1.0.2
  * Author:            Digital Hurricane
  * Author URI:        https://github.com/digitalhurricane-io/dh-woocommerce-ajax-cart
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'DH_WC_AJAX_CARTVERSION', '1.0.1' );
+define( 'DH_WC_AJAX_CARTVERSION', '1.0.2' );
 
 /**
  * The code that runs during plugin activation.
