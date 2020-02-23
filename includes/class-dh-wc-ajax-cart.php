@@ -181,6 +181,9 @@ class Dh_Wc_Ajax_Cart {
 
 		$this->loader->add_action( 'wp_ajax_dhaj_wc_remove_item', $plugin_public, 'remove_item');
 		$this->loader->add_action( 'wp_ajax_nopriv_dhaj_wc_remove_item', $plugin_public, 'remove_item');
+
+		$this->loader->add_action( 'wp_ajax_dhaj_wc_apply_coupon', $plugin_public, 'apply_coupon');
+		$this->loader->add_action('wp_ajax_nopriv_dhaj_wc_apply_coupon', $plugin_public, 'apply_coupon');
 	}
 
 	/**

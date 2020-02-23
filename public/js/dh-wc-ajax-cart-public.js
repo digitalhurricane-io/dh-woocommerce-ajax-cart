@@ -3,6 +3,8 @@
 
 	$(document).ready(function() {
 
+		coupon();
+
 		// watch for X link click, when user want to completely remove item from cart
 		const xLinks = $('td.product-remove > a');
 		xLinks.each(function() {
@@ -56,6 +58,49 @@
 			}, 400);
 		});
 	});
+
+	// submit coupon code with ajax
+	function coupon() {
+		const btn = $('button[name="apply_coupon"]');
+		console.log('coupon btn: ', btn);
+		btn.unbind();
+
+		btn.on('click', function(e) {
+			e.preventDefault();
+
+			var data = {
+				coupon_code: $('#coupon_code').val(),
+				security: dh_wc_vars.apply_coupon_nonce
+			};
+
+			const url = '/wp-admin/admin-ajax.php?action=dhaj_wc_apply_coupon';
+
+			$.post(url, data).done(function (res) {
+
+				if (res && !res.success) {
+					console.log('failed coupon request');
+					return;
+				}
+
+				const messageBox = $('#pnp-coupon-message');
+
+				const notices = res.data.notices;
+				const total = res.data.total;
+
+				if (notices.includes('does not exist')) {
+					messageBox.text("Coupon does not exist");
+
+				} else if (notices.includes('code already applied')) {
+					messageBox.text("Coupon already applied");
+
+				} else if (notices.includes('code applied successfully')) {
+					messageBox.text("Coupon applied successfully");
+				}
+				
+				updateTotal(total);
+			});
+		});
+	}
 
 	// loop through rows and recalculate subtotals
 	function updateSubtotals() {
@@ -125,19 +170,33 @@
 
 			// this try/catch is specific to a theme I'm making right now, with a modified cart template.
 			// default cart template doesn't have a total field
-			const updatedTotal = numberWithCommas(parseFloat(res.data).toFixed(2));
-			try {
-				$('#cart_total_td > strong > span').text(updatedTotal); // change cart total
-				$('#cart_total_td > strong > span').prepend('<span class="woocommerce-Price-currencySymbol">$</span>');
+			// const updatedTotal = numberWithCommas(parseFloat(res.data).toFixed(2));
+			// try {
+			// 	$('#cart_total_td > strong > span').text(updatedTotal); // change cart total
+			// 	$('#cart_total_td > strong > span').prepend('<span class="woocommerce-Price-currencySymbol">$</span>');
 
-			} catch (e) {
-				console.error(e);
-			}
+			// } catch (e) {
+			// 	console.error(e);
+			// }
+			updateTotal(res.data);
 
 			return true;
 		}
 		console.log('no success');
 		return false;
+	}
+
+	function updateTotal(total) {
+		const updatedTotal = numberWithCommas(parseFloat(total).toFixed(2));
+		// this try/catch is specific to a theme I'm making right now, with a modified cart template.
+		// default cart template doesn't have a total field
+		try {
+			$('#cart_total_td > strong > span').text(updatedTotal); // change cart total
+			$('#cart_total_td > strong > span').prepend('<span class="woocommerce-Price-currencySymbol">$</span>');
+
+		} catch (e) {
+			console.error(e);
+		}
 	}
 
 	function ajaxPromise(options) {

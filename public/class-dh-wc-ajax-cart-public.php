@@ -97,6 +97,7 @@ class Dh_Wc_Ajax_Cart_Public {
 		 */
 
 		wp_enqueue_script( $this->dh_wc_ajax_cart, plugin_dir_url( __FILE__ ) . 'js/dh-wc-ajax-cart-public.js', array( 'jquery' ), $this->version, false );
+		wp_localize_script($this->dh_wc_ajax_cart, 'dh_wc_vars', ['apply_coupon_nonce' => wp_create_nonce("apply-coupon")]);
 
 	}
 
@@ -167,5 +168,23 @@ class Dh_Wc_Ajax_Cart_Public {
 		$newTotal = $woocommerce->cart->get_totals()['total'];
 		wp_send_json_success($newTotal);
 
+	}
+
+	public function apply_coupon() {
+		check_ajax_referer('apply-coupon', 'security');
+
+		if (!empty($_POST['coupon_code'])) {
+			WC()->cart->add_discount(wc_format_coupon_code(wp_unslash($_POST['coupon_code']))); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		}
+
+		// pass true to return rather than echo
+		$notices = wc_print_notices(true);
+
+		global $woocommerce;
+		
+		wp_send_json_success([
+			'notices' => $notices,
+			'total' => $woocommerce->cart->get_totals()['total']
+			]);
 	}
 }
